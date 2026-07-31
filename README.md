@@ -32,6 +32,7 @@ NestJS propose une intégration officielle avec TypeORM via `@nestjs/typeorm`. P
 * React
 * TypeScript
 * Vite
+* Tailwind CSS
 * Axios
 * TanStack Query
 * React Router
@@ -142,12 +143,36 @@ npm create vite@latest client -- --template react-ts
 cd client
 npm install
 npm install axios react-router-dom @tanstack/react-query
+npm install tailwindcss @tailwindcss/vite
 ```
+
+Tailwind est installé pendant la création du frontend : il remplace le CSS écrit à la main et n’ajoute donc pas de journée supplémentaire au planning. Avec Vite, le plugin officiel suffit et aucun fichier `tailwind.config.js` n’est nécessaire. ([Tailwind CSS Documentation][6])
+
+Dans `client/vite.config.ts` :
+
+```ts
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+```
+
+Remplacer le contenu de `client/src/index.css` par :
+
+```css
+@import "tailwindcss";
+```
+
+Le fichier est déjà importé dans `client/src/main.tsx`. Les composants pourront donc être stylisés directement avec les classes utilitaires Tailwind dans leur attribut `className`.
 
 ### Résultat du jour 1
 
 * NestJS démarre sur le port `3000` ;
 * React démarre sur le port `5173` ;
+* Tailwind CSS fonctionne dans React ;
 * MySQL fonctionne ;
 * TypeORM se connecte correctement à MySQL.
 
@@ -670,9 +695,21 @@ Dernière vérification : 30/07/2026 à 12:30
 [Vérifier] [Modifier] [Supprimer]
 ```
 
+Les composants sont stylisés directement avec Tailwind CSS. Il ne faut pas prévoir une étape CSS séparée : les classes sont ajoutées dans les `className` au moment de créer chaque composant.
+
+Exemple :
+
+```tsx
+<article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 className="text-lg font-semibold text-slate-900">
+    Portfolio
+  </h2>
+</article>
+```
+
 ### Résultat du jour 4
 
-Tous les services présents dans MySQL sont affichés dans React.
+Tous les services présents dans MySQL sont affichés dans une interface React stylisée avec Tailwind CSS.
 
 ---
 
@@ -879,7 +916,7 @@ Les services sont automatiquement vérifiés toutes les cinq minutes et React r�
 
 ## 1. Améliorer l’interface
 
-Ajouter :
+Finaliser les classes Tailwind déjà présentes dans les composants pour ajouter :
 
 * un badge vert pour `ONLINE` ;
 * un badge rouge pour `OFFLINE` ;
@@ -954,6 +991,7 @@ Pour un projet uniquement local et personnel, tu peux commencer sans implémente
 ✅ Vérification manuelle
 ✅ Vérification automatique
 ✅ Dashboard React TypeScript
+✅ Interface Tailwind CSS
 ✅ Validation des données
 ✅ Gestion des erreurs
 ✅ Statistiques globales
@@ -964,3 +1002,4 @@ Pour un projet uniquement local et personnel, tu peux commencer sans implémente
 [3]: https://docs.nestjs.com/techniques/http-module?utm_source=chatgpt.com "HTTP module | NestJS - A progressive Node.js framework"
 [4]: https://docs.nestjs.com/techniques/task-scheduling?utm_source=chatgpt.com "Task Scheduling | NestJS - A progressive Node.js framework"
 [5]: https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html?utm_source=chatgpt.com "Server Side Request Forgery Prevention - OWASP Cheat Sheet Series"
+[6]: https://tailwindcss.com/docs/installation/using-vite "Installing Tailwind CSS with Vite - Tailwind CSS"
