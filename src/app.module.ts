@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MonitorsModule } from './monitors/monitors.module';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
       }),
     }),
+
+    MonitorsModule,
   ],
 })
 export class AppModule {}
