@@ -15,7 +15,7 @@ import { Monitor } from './entities/monitor.entity';
 import { MonitorsService } from './monitors.service';
 import { UpdateMonitorDto } from './update-monitor.dto';
 
-@Controller('monitors')
+@Controller('api/monitors')
 export class MonitorsController {
   constructor(private readonly monitorsService: MonitorsService) {}
 
@@ -32,6 +32,11 @@ export class MonitorsController {
   @Post()
   create(@Body() dto: CreateMonitorDto): Promise<Monitor> {
     return this.monitorsService.create(dto);
+  }
+
+  @Post(':id/check')
+  check(@Param('id', ParseIntPipe) id: number) {
+    return this.monitorsService.check(id);
   }
 
   @Patch(':id')
