@@ -6,8 +6,34 @@ const api = axios.create({
   timeout: 10_000,
 });
 
+interface ApiErrorPayload {
+  message?: string | string[];
+}
+
+export function getApiErrorMessage(
+  error: unknown,
+  fallbackMessage: string,
+): string {
+  if (!axios.isAxiosError<ApiErrorPayload>(error)) {
+    return fallbackMessage;
+  }
+
+  const message = error.response?.data?.message;
+
+  if (Array.isArray(message)) {
+    return message.join(' ');
+  }
+
+  return message ?? fallbackMessage;
+}
+
 export async function getMonitors(): Promise<Monitor[]> {
   const response = await api.get<Monitor[]>('/monitors');
+  return response.data;
+}
+
+export async function getMonitor(id: number): Promise<Monitor> {
+  const response = await api.get<Monitor>(`/monitors/${id}`);
   return response.data;
 }
 

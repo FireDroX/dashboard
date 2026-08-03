@@ -1,8 +1,12 @@
+import { Link } from 'react-router';
 import type { Monitor } from '../types/monitor';
 import StatusBadge from './StatusBadge';
 
 interface MonitorCardProps {
   monitor: Monitor;
+  isChecking: boolean;
+  onCheck: () => void;
+  onDelete: () => void;
 }
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -18,7 +22,12 @@ function formatLastCheck(lastCheckedAt: string | null) {
   return dateFormatter.format(new Date(lastCheckedAt));
 }
 
-function MonitorCard({ monitor }: MonitorCardProps) {
+function MonitorCard({
+  monitor,
+  isChecking,
+  onCheck,
+  onDelete,
+}: MonitorCardProps) {
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div className="p-5 sm:p-6">
@@ -76,19 +85,22 @@ function MonitorCard({ monitor }: MonitorCardProps) {
       <div className="flex items-center gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3.5 sm:px-6">
         <button
           type="button"
-          className="rounded-lg bg-slate-950 px-3.5 py-2 text-xs font-semibold text-white shadow-sm"
+          disabled={isChecking}
+          onClick={onCheck}
+          className="rounded-lg bg-slate-950 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Vérifier
+          {isChecking ? 'Vérification…' : 'Vérifier'}
         </button>
-        <button
-          type="button"
+        <Link
+          to={`/monitors/${monitor.id}/edit`}
           className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm"
         >
           Modifier
-        </button>
+        </Link>
         <button
           type="button"
           aria-label={`Supprimer ${monitor.name}`}
+          onClick={onDelete}
           className="ml-auto grid size-8 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
         >
           <svg

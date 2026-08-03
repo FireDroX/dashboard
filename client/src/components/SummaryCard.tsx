@@ -10,11 +10,7 @@ const toneStyles = {
   danger: 'bg-rose-50 text-rose-700',
 };
 
-function SummaryCard({
-  label,
-  value,
-  tone = 'neutral',
-}: SummaryCardProps) {
+function SummaryCard({ label, value, tone = 'neutral' }: SummaryCardProps) {
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between gap-4">

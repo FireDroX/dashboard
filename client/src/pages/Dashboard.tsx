@@ -1,41 +1,59 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router';
+import ConfirmModal from '../components/ConfirmModal';
 import MonitorCard from '../components/MonitorCard';
 import SummaryCard from '../components/SummaryCard';
-import { getMonitors } from '../services/monitorApi';
+import {
+  checkMonitor,
+  deleteMonitor,
+  getApiErrorMessage,
+  getMonitors,
+} from '../services/monitorApi';
 import type { Monitor } from '../types/monitor';
 
 function Dashboard() {
-  const [monitors, setMonitors] = useState<Monitor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const [monitorToDelete, setMonitorToDelete] = useState<Monitor | null>(null);
 
-  useEffect(() => {
-    let isCancelled = false;
+  const monitorsQuery = useQuery({
+    queryKey: ['monitors'],
+    queryFn: getMonitors,
+  });
 
-    async function loadMonitors() {
-      try {
-        const data = await getMonitors();
+  const checkMutation = useMutation({
+    mutationFn: checkMonitor,
+    onSuccess: async (checkedMonitor) => {
+      queryClient.setQueryData<Monitor[]>(['monitors'], (currentMonitors) =>
+        currentMonitors?.map((monitor) =>
+          monitor.id === checkedMonitor.id ? checkedMonitor : monitor,
+        ),
+      );
 
-        if (!isCancelled) {
-          setMonitors(data);
-        }
-      } catch {
-        if (!isCancelled) {
-          setError('Impossible de récupérer les services depuis l’API.');
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
+      await queryClient.invalidateQueries({ queryKey: ['monitors'] });
+    },
+  });
 
-    void loadMonitors();
+  const deleteMutation = useMutation({
+    mutationFn: deleteMonitor,
+    onSuccess: async (_, deletedMonitorId) => {
+      queryClient.setQueryData<Monitor[]>(['monitors'], (currentMonitors) =>
+        currentMonitors?.filter((monitor) => monitor.id !== deletedMonitorId),
+      );
+      setMonitorToDelete(null);
 
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
+      await queryClient.invalidateQueries({ queryKey: ['monitors'] });
+    },
+  });
+
+  const monitors = monitorsQuery.data ?? [];
+  const isLoading = monitorsQuery.isPending;
+  const error = monitorsQuery.isError
+    ? getApiErrorMessage(
+        monitorsQuery.error,
+        'Impossible de récupérer les services depuis l’API.',
+      )
+    : null;
 
   const onlineCount = monitors.filter(
     (monitor) => monitor.status === 'ONLINE',
@@ -43,6 +61,24 @@ function Dashboard() {
   const offlineCount = monitors.filter(
     (monitor) => monitor.status === 'OFFLINE',
   ).length;
+
+  const checkError = checkMutation.isError
+    ? getApiErrorMessage(
+        checkMutation.error,
+        'Impossible de vérifier ce service.',
+      )
+    : null;
+
+  function openDeleteModal(monitor: Monitor) {
+    deleteMutation.reset();
+    setMonitorToDelete(monitor);
+  }
+
+  function closeDeleteModal() {
+    if (!deleteMutation.isPending) {
+      setMonitorToDelete(null);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
@@ -91,15 +127,25 @@ function Dashboard() {
       </header>
 
       <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10 lg:py-14">
-        <div className="mb-8">
-          <p className="mb-2 text-sm font-semibold text-blue-600">Vue d'ensemble</p>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-            État des services
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-            Consultez rapidement la disponibilité et les performances de vos
-            services.
-          </p>
+        <div className="mb-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+          <div>
+            <p className="mb-2 text-sm font-semibold text-blue-600">
+              Vue d'ensemble
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+              État des services
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+              Consultez rapidement la disponibilité et les performances de vos
+              services.
+            </p>
+          </div>
+          <Link
+            to="/monitors/new"
+            className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+          >
+            Ajouter un service
+          </Link>
         </div>
 
         <section
@@ -131,11 +177,17 @@ function Dashboard() {
             </span>
           </div>
 
-          {isLoading && (
-            <div
-              aria-live="polite"
-              className="grid gap-5 lg:grid-cols-2"
+          {checkError && (
+            <p
+              role="alert"
+              className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700"
             >
+              {checkError}
+            </p>
+          )}
+
+          {isLoading && (
+            <div aria-live="polite" className="grid gap-5 lg:grid-cols-2">
               {[1, 2].map((item) => (
                 <div
                   key={item}
@@ -172,12 +224,38 @@ function Dashboard() {
           {!isLoading && !error && monitors.length > 0 && (
             <div className="grid gap-5 lg:grid-cols-2">
               {monitors.map((monitor) => (
-                <MonitorCard key={monitor.id} monitor={monitor} />
+                <MonitorCard
+                  key={monitor.id}
+                  monitor={monitor}
+                  isChecking={
+                    checkMutation.isPending &&
+                    checkMutation.variables === monitor.id
+                  }
+                  onCheck={() => checkMutation.mutate(monitor.id)}
+                  onDelete={() => openDeleteModal(monitor)}
+                />
               ))}
             </div>
           )}
         </section>
       </main>
+
+      {monitorToDelete && (
+        <ConfirmModal
+          monitorName={monitorToDelete.name}
+          isDeleting={deleteMutation.isPending}
+          errorMessage={
+            deleteMutation.isError
+              ? getApiErrorMessage(
+                  deleteMutation.error,
+                  'Impossible de supprimer ce service.',
+                )
+              : null
+          }
+          onCancel={closeDeleteModal}
+          onConfirm={() => deleteMutation.mutate(monitorToDelete.id)}
+        />
+      )}
     </div>
   );
 }
