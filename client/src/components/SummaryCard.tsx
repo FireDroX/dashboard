@@ -1,31 +1,33 @@
 interface SummaryCardProps {
   label: string;
-  value: number;
-  tone?: 'neutral' | 'success' | 'danger';
+  value: number | string;
+  tone?: 'neutral' | 'success' | 'danger' | 'warning' | 'info';
 }
 
 const toneStyles = {
   neutral: 'bg-slate-100 text-slate-700',
   success: 'bg-emerald-50 text-emerald-700',
   danger: 'bg-rose-50 text-rose-700',
+  warning: 'bg-amber-50 text-amber-700',
+  info: 'bg-blue-50 text-blue-700',
 };
 
 function SummaryCard({ label, value, tone = 'neutral' }: SummaryCardProps) {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between gap-4">
+    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+          <p className="text-xs font-medium text-slate-500">{label}</p>
+          <p className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
             {value}
           </p>
         </div>
         <span
           aria-hidden="true"
-          className={`grid size-11 place-items-center rounded-xl ${toneStyles[tone]}`}
+          className={`grid size-9 shrink-0 place-items-center rounded-lg ${toneStyles[tone]}`}
         >
           <svg
-            className="size-5"
+            className="size-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

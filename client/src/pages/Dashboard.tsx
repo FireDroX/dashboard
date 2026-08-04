@@ -19,6 +19,7 @@ function Dashboard() {
   const monitorsQuery = useQuery({
     queryKey: ['monitors'],
     queryFn: getMonitors,
+    refetchInterval: 30_000,
   });
 
   const checkMutation = useMutation({
@@ -61,6 +62,23 @@ function Dashboard() {
   const offlineCount = monitors.filter(
     (monitor) => monitor.status === 'OFFLINE',
   ).length;
+  const notCheckedCount = monitors.filter(
+    (monitor) => monitor.status === 'UNKNOWN',
+  ).length;
+
+  const measuredMonitors = monitors.filter(
+    (monitor) => monitor.responseTime !== null,
+  );
+
+  const averageResponseTime =
+    measuredMonitors.length === 0
+      ? null
+      : Math.round(
+          measuredMonitors.reduce(
+            (total, monitor) => total + (monitor.responseTime ?? 0),
+            0,
+          ) / measuredMonitors.length,
+        );
 
   const checkError = checkMutation.isError
     ? getApiErrorMessage(
@@ -83,12 +101,12 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
-          <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-xl bg-slate-950 text-white shadow-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2.5">
+            <span className="grid size-8 place-items-center rounded-lg bg-slate-950 text-white shadow-sm">
               <svg
                 aria-hidden="true"
-                className="size-5"
+                className="size-4"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -102,12 +120,14 @@ function Dashboard() {
               </svg>
             </span>
             <div>
-              <p className="font-semibold tracking-tight">Service Monitor</p>
-              <p className="text-xs text-slate-500">Tableau de bord</p>
+              <p className="text-sm font-semibold tracking-tight">
+                Service Monitor
+              </p>
+              <p className="text-[11px] text-slate-500">Tableau de bord</p>
             </div>
           </div>
 
-          <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
+          <div className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
             <span
               className={`size-2 rounded-full ${
                 error
@@ -126,23 +146,23 @@ function Dashboard() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10 lg:py-14">
-        <div className="mb-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="mb-2 text-sm font-semibold text-blue-600">
+            <p className="mb-1.5 text-xs font-semibold text-blue-600">
               Vue d'ensemble
             </p>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
               État des services
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+            <p className="mt-2 max-w-2xl text-sm leading-5 text-slate-600">
               Consultez rapidement la disponibilité et les performances de vos
               services.
             </p>
           </div>
           <Link
             to="/monitors/new"
-            className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+            className="rounded-lg bg-slate-950 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800"
           >
             Ajouter un service
           </Link>
@@ -150,29 +170,41 @@ function Dashboard() {
 
         <section
           aria-label="Résumé des services"
-          className="mb-10 grid gap-4 sm:grid-cols-3"
+          className="mb-7 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5"
         >
           <SummaryCard label="Services suivis" value={monitors.length} />
           <SummaryCard label="En ligne" value={onlineCount} tone="success" />
           <SummaryCard label="Hors ligne" value={offlineCount} tone="danger" />
+          <SummaryCard
+            label="Non vérifiés"
+            value={notCheckedCount}
+            tone="warning"
+          />
+          <SummaryCard
+            label="Temps moyen"
+            value={
+              averageResponseTime === null ? '—' : `${averageResponseTime} ms`
+            }
+            tone="info"
+          />
         </section>
 
         <section aria-labelledby="services-title">
-          <div className="mb-5 flex items-end justify-between gap-4">
+          <div className="mb-4 flex items-end justify-between gap-4">
             <div>
               <h2
                 id="services-title"
-                className="text-xl font-semibold tracking-tight text-slate-950"
+                className="text-lg font-semibold tracking-tight text-slate-950"
               >
                 Vos services
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-0.5 text-xs text-slate-500">
                 {isLoading
                   ? 'Chargement des données…'
                   : 'Données récupérées depuis l’API'}
               </p>
             </div>
-            <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm">
+            <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 shadow-sm">
               {monitors.length} services
             </span>
           </div>
@@ -180,18 +212,21 @@ function Dashboard() {
           {checkError && (
             <p
               role="alert"
-              className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700"
+              className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs font-medium text-rose-700"
             >
               {checkError}
             </p>
           )}
 
           {isLoading && (
-            <div aria-live="polite" className="grid gap-5 lg:grid-cols-2">
+            <div
+              aria-live="polite"
+              className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+            >
               {[1, 2].map((item) => (
                 <div
                   key={item}
-                  className="h-80 animate-pulse rounded-2xl border border-slate-200 bg-white shadow-sm"
+                  className="h-64 animate-pulse rounded-xl border border-slate-200 bg-white shadow-sm"
                 />
               ))}
               <span className="sr-only">Chargement des services</span>
@@ -201,7 +236,7 @@ function Dashboard() {
           {!isLoading && error && (
             <div
               role="alert"
-              className="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-10 text-center"
+              className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-8 text-center"
             >
               <p className="font-semibold text-rose-800">{error}</p>
               <p className="mt-2 text-sm text-rose-700">
@@ -211,7 +246,7 @@ function Dashboard() {
           )}
 
           {!isLoading && !error && monitors.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+            <div className="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center">
               <p className="font-semibold text-slate-800">
                 Aucun service à afficher
               </p>
@@ -222,7 +257,7 @@ function Dashboard() {
           )}
 
           {!isLoading && !error && monitors.length > 0 && (
-            <div className="grid gap-5 lg:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {monitors.map((monitor) => (
                 <MonitorCard
                   key={monitor.id}

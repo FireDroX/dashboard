@@ -29,18 +29,18 @@ function MonitorCard({
   onDelete,
 }: MonitorCardProps) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
+    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-lg font-semibold text-slate-950">
+            <h3 className="truncate text-base font-semibold text-slate-950">
               {monitor.name}
             </h3>
             <a
               href={monitor.url}
               target="_blank"
               rel="noreferrer"
-              className="mt-1 block truncate text-sm text-slate-500 transition hover:text-blue-600"
+              className="mt-0.5 block truncate text-xs text-slate-500 transition hover:text-blue-600"
             >
               {monitor.url}
             </a>
@@ -48,52 +48,52 @@ function MonitorCard({
           <StatusBadge status={monitor.status} />
         </div>
 
-        <dl className="mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-slate-50 p-3.5">
+        <dl className="mt-4 grid grid-cols-2 gap-2">
+          <div className="rounded-lg bg-slate-50 p-3">
             <dt className="text-xs font-medium text-slate-500">
               Temps de réponse
             </dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">
+            <dd className="mt-0.5 text-sm font-semibold text-slate-900">
               {monitor.responseTime === null
                 ? '—'
                 : `${monitor.responseTime} ms`}
             </dd>
           </div>
-          <div className="rounded-xl bg-slate-50 p-3.5">
+          <div className="rounded-lg bg-slate-50 p-3">
             <dt className="text-xs font-medium text-slate-500">Code HTTP</dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">
+            <dd className="mt-0.5 text-sm font-semibold text-slate-900">
               {monitor.statusCode ?? '—'}
             </dd>
           </div>
-          <div className="col-span-2 rounded-xl bg-slate-50 p-3.5">
+          <div className="col-span-2 rounded-lg bg-slate-50 p-3">
             <dt className="text-xs font-medium text-slate-500">
               Dernière vérification
             </dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">
+            <dd className="mt-0.5 text-sm font-semibold text-slate-900">
               {formatLastCheck(monitor.lastCheckedAt)}
             </dd>
           </div>
         </dl>
 
         {monitor.lastError && (
-          <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+          <p className="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
             {monitor.lastError}
           </p>
         )}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3.5 sm:px-6">
+      <div className="flex items-center gap-2 border-t border-slate-100 bg-slate-50/70 px-4 py-2.5">
         <button
           type="button"
           disabled={isChecking}
           onClick={onCheck}
-          className="rounded-lg bg-slate-950 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isChecking ? 'Vérification…' : 'Vérifier'}
         </button>
         <Link
           to={`/monitors/${monitor.id}/edit`}
-          className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm"
+          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm"
         >
           Modifier
         </Link>
@@ -101,7 +101,7 @@ function MonitorCard({
           type="button"
           aria-label={`Supprimer ${monitor.name}`}
           onClick={onDelete}
-          className="ml-auto grid size-8 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+          className="ml-auto grid size-7 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
         >
           <svg
             aria-hidden="true"
