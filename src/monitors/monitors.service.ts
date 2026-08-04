@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,6 +19,17 @@ export class MonitorsService {
     private readonly monitorRepository: Repository<Monitor>,
     private readonly httpService: HttpService,
   ) {}
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async checkAll(): Promise<void> {
+    const monitors = await this.monitorRepository.find({
+      select: {
+        id: true,
+      },
+    });
+
+    await Promise.allSettled(monitors.map((monitor) => this.check(monitor.id)));
+  }
 
   async create(dto: CreateMonitorDto): Promise<Monitor> {
     const existingMonitor = await this.monitorRepository.findOneBy({

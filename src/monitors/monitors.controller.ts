@@ -34,6 +34,15 @@ export class MonitorsController {
     return this.monitorsService.create(dto);
   }
 
+  @Post('check-all')
+  async checkAll() {
+    await this.monitorsService.checkAll();
+
+    return {
+      message: 'Tous les services ont été vérifiés',
+    };
+  }
+
   @Post(':id/check')
   check(@Param('id', ParseIntPipe) id: number) {
     return this.monitorsService.check(id);

@@ -4,9 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
 import { MonitorsModule } from './monitors/monitors.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client', 'dist'),
     }),
