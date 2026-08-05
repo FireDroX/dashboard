@@ -1,11 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useParams } from 'react-router';
 import MonitorForm from '../components/MonitorForm';
-import {
-  getApiErrorMessage,
-  getMonitor,
-  updateMonitor,
-} from '../services/monitorApi';
+import { getApiErrorMessage } from '../services/apiClient';
+import { getMonitor, updateMonitor } from '../services/monitorApi';
 
 function EditMonitor() {
   const { id } = useParams<{ id: string }>();

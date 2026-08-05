@@ -9,7 +9,9 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
+import { DashboardAuthGuard } from '../auth/dashboard-auth.guard';
 import { CreateMonitorDto } from './create-monitor.dto';
 import { Monitor } from './entities/monitor.entity';
 import { MonitorsService } from './monitors.service';
@@ -30,11 +32,13 @@ export class MonitorsController {
   }
 
   @Post()
+  @UseGuards(DashboardAuthGuard)
   create(@Body() dto: CreateMonitorDto): Promise<Monitor> {
     return this.monitorsService.create(dto);
   }
 
   @Post('check-all')
+  @UseGuards(DashboardAuthGuard)
   async checkAll() {
     await this.monitorsService.checkAll();
 
@@ -44,11 +48,13 @@ export class MonitorsController {
   }
 
   @Post(':id/check')
+  @UseGuards(DashboardAuthGuard)
   check(@Param('id', ParseIntPipe) id: number) {
     return this.monitorsService.check(id);
   }
 
   @Patch(':id')
+  @UseGuards(DashboardAuthGuard)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMonitorDto,
@@ -57,6 +63,7 @@ export class MonitorsController {
   }
 
   @Delete(':id')
+  @UseGuards(DashboardAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.monitorsService.remove(id);

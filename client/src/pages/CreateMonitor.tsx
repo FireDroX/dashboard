@@ -1,11 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router';
 import MonitorForm from '../components/MonitorForm';
-import {
-  checkMonitor,
-  createMonitor,
-  getApiErrorMessage,
-} from '../services/monitorApi';
+import { getApiErrorMessage } from '../services/apiClient';
+import { checkMonitor, createMonitor } from '../services/monitorApi';
 
 function CreateMonitor() {
   const navigate = useNavigate();

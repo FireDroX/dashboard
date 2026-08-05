@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
+import { AuthModule } from './auth/auth.module';
 import { MonitorsModule } from './monitors/monitors.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -34,6 +35,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       }),
     }),
 
+    AuthModule,
     MonitorsModule,
   ],
 })

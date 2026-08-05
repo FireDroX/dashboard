@@ -4,6 +4,7 @@ import StatusBadge from './StatusBadge';
 
 interface MonitorCardProps {
   monitor: Monitor;
+  canManage: boolean;
   isChecking: boolean;
   onCheck: () => void;
   onDelete: () => void;
@@ -24,6 +25,7 @@ function formatLastCheck(lastCheckedAt: string | null) {
 
 function MonitorCard({
   monitor,
+  canManage,
   isChecking,
   onCheck,
   onDelete,
@@ -82,43 +84,45 @@ function MonitorCard({
         )}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-slate-100 bg-slate-50/70 px-4 py-2.5">
-        <button
-          type="button"
-          disabled={isChecking}
-          onClick={onCheck}
-          className="rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isChecking ? 'Vérification…' : 'Vérifier'}
-        </button>
-        <Link
-          to={`/monitors/${monitor.id}/edit`}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm"
-        >
-          Modifier
-        </Link>
-        <button
-          type="button"
-          aria-label={`Supprimer ${monitor.name}`}
-          onClick={onDelete}
-          className="ml-auto grid size-7 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
-        >
-          <svg
-            aria-hidden="true"
-            className="size-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
+      {canManage && (
+        <div className="flex items-center gap-2 border-t border-slate-100 bg-slate-50/70 px-4 py-2.5">
+          <button
+            type="button"
+            disabled={isChecking}
+            onClick={onCheck}
+            className="rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m14.74 9-.35 9m-4.78 0-.35-9m9.97-3.21c.35.05.7.1 1.04.16m-1.04-.16L18.16 19.67A2.25 2.25 0 0 1 15.92 21H8.08a2.25 2.25 0 0 1-2.24-1.33L4.77 5.79m14.46 0a48.1 48.1 0 0 0-3.48-.4m-10.98.4c-.35.05-.7.1-1.04.16m1.04-.16a48.1 48.1 0 0 1 3.48-.4m7.5 0V4.48c0-1.18-.91-2.16-2.09-2.2a52 52 0 0 0-3.32 0c-1.18.04-2.09 1.02-2.09 2.2v.91m7.5 0a48.7 48.7 0 0 0-7.5 0"
-            />
-          </svg>
-        </button>
-      </div>
+            {isChecking ? 'Vérification…' : 'Vérifier'}
+          </button>
+          <Link
+            to={`/monitors/${monitor.id}/edit`}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm"
+          >
+            Modifier
+          </Link>
+          <button
+            type="button"
+            aria-label={`Supprimer ${monitor.name}`}
+            onClick={onDelete}
+            className="ml-auto grid size-7 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+          >
+            <svg
+              aria-hidden="true"
+              className="size-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m14.74 9-.35 9m-4.78 0-.35-9m9.97-3.21c.35.05.7.1 1.04.16m-1.04-.16L18.16 19.67A2.25 2.25 0 0 1 15.92 21H8.08a2.25 2.25 0 0 1-2.24-1.33L4.77 5.79m14.46 0a48.1 48.1 0 0 0-3.48-.4m-10.98.4c-.35.05-.7.1-1.04.16m1.04-.16a48.1 48.1 0 0 1 3.48-.4m7.5 0V4.48c0-1.18-.91-2.16-2.09-2.2a52 52 0 0 0-3.32 0c-1.18.04-2.09 1.02-2.09 2.2v.91m7.5 0a48.7 48.7 0 0 0-7.5 0"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </article>
   );
 }
