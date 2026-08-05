@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.vscode
+.idea
+
+node_modules
+client/node_modules
+dist
+client/dist
+coverage
+
+npm-debug.log*
+*.log
