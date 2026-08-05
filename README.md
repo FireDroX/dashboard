@@ -70,6 +70,7 @@ Le dashboard conserve uniquement le dernier résultat de chaque service. Il ne s
 │   ├── monitors/            # API, service TypeORM et entité Monitor
 │   ├── app.module.ts        # Configuration NestJS et MySQL
 │   └── main.ts              # Sessions, CORS, validation et démarrage
+├── database/schema.sql      # Création de la base et de la table monitors
 ├── Dockerfile               # Build frontend, backend et image d’exécution
 ├── build.sh                 # Déploiement sur un réseau MariaDB existant
 └── .env.example             # Variables d’environnement attendues
@@ -101,9 +102,39 @@ CREATE DATABASE monitoring
   COLLATE utf8mb4_unicode_ci;
 ```
 
-L’utilisateur défini dans `.env` doit pouvoir créer et modifier des tables dans cette base.
+Créer ensuite la table utilisée par TypeORM :
 
-En développement, TypeORM crée ou met à jour automatiquement la table `monitors`. `express-mysql-session` crée automatiquement la table `sessions`.
+```sql
+USE monitoring;
+
+CREATE TABLE IF NOT EXISTS monitors (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  url VARCHAR(2048) NOT NULL,
+  status ENUM('UNKNOWN', 'ONLINE', 'OFFLINE') NOT NULL DEFAULT 'UNKNOWN',
+  responseTime INT NULL,
+  statusCode SMALLINT NULL,
+  lastError VARCHAR(255) NULL,
+  lastCheckedAt DATETIME NULL,
+  createdAt DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updatedAt DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+    ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (id),
+  UNIQUE KEY UQ_monitors_url (url) USING HASH
+) ENGINE=InnoDB
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+```
+
+Le script complet peut être importé directement :
+
+```bash
+mysql -u root -p < database/schema.sql
+```
+
+L’utilisateur défini dans `.env` doit pouvoir lire et modifier les données de cette base. Il doit également pouvoir créer la table `sessions`, générée automatiquement par `express-mysql-session` au premier démarrage.
+
+En développement, cette importation reste facultative : TypeORM crée ou met à jour automatiquement la table `monitors` lorsque `NODE_ENV` n’est pas égal à `production`.
 
 ### 3. Configurer l’environnement
 
