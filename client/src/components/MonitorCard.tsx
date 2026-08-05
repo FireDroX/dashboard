@@ -31,18 +31,23 @@ function MonitorCard({
   onDelete,
 }: MonitorCardProps) {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <article className="cyber-panel group overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:border-cyan-400/55 hover:shadow-[0_18px_45px_rgba(0,240,255,0.07)]">
       <div className="p-4">
+        <div className="mb-3 flex items-center justify-between border-b border-slate-700/55 pb-2 font-mono text-[9px] tracking-[0.16em] text-slate-500 uppercase">
+          <span>Node_{String(monitor.id).padStart(4, '0')}</span>
+          <span className="text-cyan-400/70">HTTP_MONITOR</span>
+        </div>
+
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold text-slate-950">
+            <h3 className="truncate text-base font-bold tracking-wide text-slate-50 uppercase">
               {monitor.name}
             </h3>
             <a
               href={monitor.url}
               target="_blank"
               rel="noreferrer"
-              className="mt-0.5 block truncate text-xs text-slate-500 transition hover:text-blue-600"
+              className="mt-1 block truncate font-mono text-[11px] text-cyan-300/65 transition hover:text-cyan-200"
             >
               {monitor.url}
             </a>
@@ -50,53 +55,50 @@ function MonitorCard({
           <StatusBadge status={monitor.status} />
         </div>
 
-        <dl className="mt-4 grid grid-cols-2 gap-2">
-          <div className="rounded-lg bg-slate-50 p-3">
-            <dt className="text-xs font-medium text-slate-500">
-              Temps de réponse
-            </dt>
-            <dd className="mt-0.5 text-sm font-semibold text-slate-900">
+        <dl className="cyber-stat-grid mt-4 grid grid-cols-2 gap-px border border-slate-700/65 bg-slate-700/65">
+          <div className="bg-[#081019] p-2.5">
+            <dt className="cyber-label">Temps de réponse</dt>
+            <dd className="mt-1 font-mono text-sm font-bold text-cyan-100">
               {monitor.responseTime === null
                 ? '—'
                 : `${monitor.responseTime} ms`}
             </dd>
           </div>
-          <div className="rounded-lg bg-slate-50 p-3">
-            <dt className="text-xs font-medium text-slate-500">Code HTTP</dt>
-            <dd className="mt-0.5 text-sm font-semibold text-slate-900">
+          <div className="bg-[#081019] p-2.5">
+            <dt className="cyber-label">Code HTTP</dt>
+            <dd className="mt-1 font-mono text-sm font-bold text-cyan-100">
               {monitor.statusCode ?? '—'}
             </dd>
           </div>
-          <div className="col-span-2 rounded-lg bg-slate-50 p-3">
-            <dt className="text-xs font-medium text-slate-500">
-              Dernière vérification
-            </dt>
-            <dd className="mt-0.5 text-sm font-semibold text-slate-900">
+          <div className="col-span-2 bg-[#081019] p-2.5">
+            <dt className="cyber-label">Dernière vérification</dt>
+            <dd className="mt-1 font-mono text-xs font-semibold text-slate-200">
               {formatLastCheck(monitor.lastCheckedAt)}
             </dd>
           </div>
         </dl>
 
         {monitor.lastError && (
-          <p className="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+          <p className="cyber-alert mt-2 px-3 py-2 text-xs">
+            <span className="mr-2 font-bold">ERR://</span>
             {monitor.lastError}
           </p>
         )}
       </div>
 
       {canManage && (
-        <div className="flex items-center gap-2 border-t border-slate-100 bg-slate-50/70 px-4 py-2.5">
+        <div className="flex items-center gap-2 border-t border-slate-700/70 bg-black/25 px-4 py-2.5">
           <button
             type="button"
             disabled={isChecking}
             onClick={onCheck}
-            className="rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="cyber-button min-h-8 px-3 py-1.5"
           >
             {isChecking ? 'Vérification…' : 'Vérifier'}
           </button>
           <Link
             to={`/monitors/${monitor.id}/edit`}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm"
+            className="cyber-button cyber-button--ghost min-h-8 px-3 py-1.5"
           >
             Modifier
           </Link>
@@ -104,7 +106,7 @@ function MonitorCard({
             type="button"
             aria-label={`Supprimer ${monitor.name}`}
             onClick={onDelete}
-            className="ml-auto grid size-7 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+            className="cyber-icon-button ml-auto"
           >
             <svg
               aria-hidden="true"

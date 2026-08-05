@@ -34,15 +34,19 @@ function MonitorForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+      className="cyber-panel [--panel-accent:#fcee0a] p-5 sm:p-7"
     >
-      <div className="space-y-6">
+      <div className="mb-6 flex items-center justify-between border-b border-slate-700/60 pb-3">
+        <span className="cyber-kicker">Node configuration</span>
+        <span className="font-mono text-[9px] tracking-[0.16em] text-slate-600 uppercase">
+          WRITE_ACCESS://GRANTED
+        </span>
+      </div>
+
+      <div className="space-y-5">
         <div>
-          <label
-            htmlFor="monitor-name"
-            className="block text-sm font-semibold text-slate-800"
-          >
-            Nom du service
+          <label htmlFor="monitor-name" className="cyber-label block">
+            01 // Nom du service
           </label>
           <input
             id="monitor-name"
@@ -59,16 +63,13 @@ function MonitorForm({
               }))
             }
             placeholder="Portfolio"
-            className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            className="cyber-input mt-2"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="monitor-url"
-            className="block text-sm font-semibold text-slate-800"
-          >
-            URL du service
+          <label htmlFor="monitor-url" className="cyber-label block">
+            02 // Point d’accès URL
           </label>
           <input
             id="monitor-url"
@@ -84,35 +85,26 @@ function MonitorForm({
               }))
             }
             placeholder="https://addrien.fr"
-            className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            className="cyber-input mt-2"
           />
-          <p className="mt-2 text-xs text-slate-500">
-            L’URL doit commencer par http:// ou https://.
+          <p className="mt-2 font-mono text-[10px] text-slate-500">
+            PROTOCOL_REQUIRED:// http:// ou https://
           </p>
         </div>
       </div>
 
       {errorMessage && (
-        <p
-          role="alert"
-          className="mt-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700"
-        >
+        <p role="alert" className="cyber-alert mt-5 px-4 py-3 text-xs">
+          <span className="mr-2 font-bold">WRITE_ERROR://</span>
           {errorMessage}
         </p>
       )}
 
-      <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Link
-          to="/"
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-        >
+      <div className="mt-7 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Link to="/" className="cyber-button cyber-button--ghost">
           Annuler
         </Link>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={isSubmitting} className="cyber-button">
           {isSubmitting ? 'Enregistrement…' : submitLabel}
         </button>
       </div>

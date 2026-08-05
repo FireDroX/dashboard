@@ -21,21 +21,21 @@ function CreateMonitor() {
   });
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-10 text-slate-950 sm:px-8 lg:py-14">
+    <main className="cyber-shell cyber-grid min-h-screen px-5 py-8 text-slate-100 sm:px-8 lg:py-12">
       <div className="mx-auto max-w-2xl">
         <Link
           to="/"
-          className="text-sm font-semibold text-blue-600 transition hover:text-blue-700"
+          className="font-mono text-[11px] font-bold tracking-wider text-cyan-300 uppercase transition hover:text-cyan-100"
         >
           ← Retour au dashboard
         </Link>
 
-        <div className="mb-8 mt-6">
-          <p className="mb-2 text-sm font-semibold text-blue-600">
-            Nouveau service
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight">Ajouter une URL</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+        <div className="mb-6 mt-7 border-l-2 border-yellow-300 pl-4">
+          <p className="cyber-kicker mb-1.5">Deploy // new_node</p>
+          <h1 className="cyber-title text-3xl font-black text-slate-50">
+            Ajouter une URL
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-slate-400">
             Renseignez le service que vous souhaitez surveiller.
           </p>
         </div>

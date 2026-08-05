@@ -9,19 +9,19 @@ const statusStyles: Record<
   { label: string; badge: string; dot: string }
 > = {
   ONLINE: {
-    label: 'En ligne',
-    badge: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-    dot: 'bg-emerald-500',
+    label: 'Online',
+    badge: 'border-emerald-400/35 bg-emerald-400/10 text-emerald-300',
+    dot: 'bg-emerald-300 text-emerald-300',
   },
   OFFLINE: {
-    label: 'Hors ligne',
-    badge: 'bg-rose-50 text-rose-700 ring-rose-600/20',
-    dot: 'bg-rose-500',
+    label: 'Offline',
+    badge: 'border-rose-400/40 bg-rose-400/10 text-rose-300',
+    dot: 'bg-rose-300 text-rose-300',
   },
   UNKNOWN: {
-    label: 'En attente',
-    badge: 'bg-amber-50 text-amber-700 ring-amber-600/20',
-    dot: 'bg-amber-500',
+    label: 'Pending',
+    badge: 'border-yellow-300/40 bg-yellow-300/10 text-yellow-200',
+    dot: 'bg-yellow-200 text-yellow-200',
   },
 };
 
@@ -30,9 +30,9 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset ${style.badge}`}
+      className={`cyber-cut inline-flex items-center gap-1.5 border px-2 py-1 font-mono text-[10px] font-bold tracking-[0.12em] uppercase ${style.badge}`}
     >
-      <span className={`size-1.5 rounded-full ${style.dot}`} />
+      <span className={`cyber-pulse size-1.5 rounded-full ${style.dot}`} />
       {style.label}
     </span>
   );

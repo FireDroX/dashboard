@@ -16,10 +16,13 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (sessionQuery.isPending) {
     return (
-      <main className="grid min-h-screen place-items-center bg-slate-50 px-5">
-        <p className="text-sm font-medium text-slate-500">
-          Vérification de la session…
-        </p>
+      <main className="cyber-shell cyber-grid grid min-h-screen place-items-center px-5">
+        <div className="text-center">
+          <span className="cyber-pulse mx-auto block size-2 rounded-full bg-cyan-300 text-cyan-300" />
+          <p className="mt-4 font-mono text-[11px] font-bold tracking-[0.16em] text-cyan-200 uppercase">
+            Vérification de la session…
+          </p>
+        </div>
       </main>
     );
   }
