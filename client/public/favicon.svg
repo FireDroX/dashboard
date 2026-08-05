@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path
+    fill="#05070b"
+    stroke="#00f0ff"
+    stroke-width="3"
+    d="M9 2h41l12 12v41l-7 7H14L2 50V9Z"
+  />
+  <path
+    fill="none"
+    stroke="#fcee0a"
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+    stroke-width="5"
+    d="M9 34h10l6-16 9 31 7-21 6 6h8"
+  />
+  <circle cx="55" cy="34" r="4" fill="#00f0ff" />
+</svg>
