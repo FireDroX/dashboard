@@ -54,10 +54,11 @@ fi
 if [[ -n "${PULL_IMAGE:-}" ]]; then
   echo "Récupération de l'image ${PULL_IMAGE}..."
   docker pull "${PULL_IMAGE}"
-  docker tag "${PULL_IMAGE}" "${IMAGE_NAME}:latest"
+  IMAGE_REF="${PULL_IMAGE}"
 else
   echo "Build de l'image ${IMAGE_NAME}:latest..."
   DOCKER_BUILDKIT=1 docker build -t "${IMAGE_NAME}:latest" .
+  IMAGE_REF="${IMAGE_NAME}:latest"
 fi
 
 echo "Remplacement du conteneur ${CONTAINER_NAME}..."
@@ -72,7 +73,7 @@ docker run -d \
   --network "${NETWORK_NAME}" \
   --name "${CONTAINER_NAME}" \
   --restart unless-stopped \
-  "${IMAGE_NAME}:latest"
+  "${IMAGE_REF}"
 
 echo "Logs du conteneur..."
 docker logs --tail 50 "${CONTAINER_NAME}"
