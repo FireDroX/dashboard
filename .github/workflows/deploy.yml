@@ -1,0 +1,66 @@
+name: Deploy
+
+# Runs only after the CI workflow completes successfully on master — never
+# on a PR, and never if lint/build failed.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/firedrox/dashboard
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    if: github.repository == 'FireDroX/dashboard' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    permissions:
+      packages: read
+    steps:
+      - name: Install cloudflared
+        run: |
+          curl -fsSL -o cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+          chmod +x cloudflared
+          sudo mv cloudflared /usr/local/bin/cloudflared
+          cloudflared --version
+
+      - name: Configure SSH over the Cloudflare Tunnel
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >> ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName ${{ secrets.DEPLOY_SSH_HOSTNAME }}
+            User ${{ secrets.DEPLOY_SSH_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ProxyCommand cloudflared access ssh --hostname %h
+          EOF
+
+      # GITHUB_TOKEN is masked in the log automatically. This login is
+      # scoped to the deploy target's docker daemon and only needs to
+      # survive long enough for the pull done by build.sh right after —
+      # the token itself expires with this job run.
+      - name: Log in to the Container registry on the deploy target
+        run: |
+          ssh deploy-target "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin"
+
+      # First deploy on a fresh server is expected to fail here: the .env
+      # file isn't committed to git, so build.sh has nothing to read env
+      # vars from until someone creates it by hand on the server. Every
+      # deploy after that succeeds.
+      #
+      # The image is pulled pre-built from GHCR (job build-and-push-image
+      # in ci.yml), never rebuilt from source here: PULL_IMAGE makes
+      # build.sh pull + retag instead of `docker build`, then it replaces
+      # the container on the existing mariadb network as usual.
+      # DEPLOY_PATH is intentionally unquoted below so `~` in it still
+      # expands remotely (quoted, bash treats `~` as a literal char).
+      - name: git pull && build.sh (pull image from GHCR)
+        run: |
+          ssh deploy-target "cd ${{ secrets.DEPLOY_PATH }} && git pull && PULL_IMAGE=${{ env.IMAGE_NAME }}:${{ github.event.workflow_run.head_sha }} ./build.sh"

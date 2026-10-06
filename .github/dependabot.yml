@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - '*'
+  - package-ecosystem: npm
+    directory: /client
+    schedule:
+      interval: monthly
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - '*'

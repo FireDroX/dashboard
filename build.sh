@@ -51,8 +51,14 @@ if [[ -z "${DB_HOST_VALUE}" || "${DB_HOST_VALUE}" == "localhost" || "${DB_HOST_V
   exit 1
 fi
 
-echo "Build de l'image ${IMAGE_NAME}:latest..."
-DOCKER_BUILDKIT=1 docker build -t "${IMAGE_NAME}:latest" .
+if [[ -n "${PULL_IMAGE:-}" ]]; then
+  echo "Récupération de l'image ${PULL_IMAGE}..."
+  docker pull "${PULL_IMAGE}"
+  docker tag "${PULL_IMAGE}" "${IMAGE_NAME}:latest"
+else
+  echo "Build de l'image ${IMAGE_NAME}:latest..."
+  DOCKER_BUILDKIT=1 docker build -t "${IMAGE_NAME}:latest" .
+fi
 
 echo "Remplacement du conteneur ${CONTAINER_NAME}..."
 docker rm -f "${CONTAINER_NAME}" 2>/dev/null || true
